@@ -49,7 +49,7 @@ mvn test
 POST http://localhost:8080/votacao/cadastrarSchedule
 
 {
-  "descrição": "Descrição da pauta"
+  "descricao": "Descrição da pauta"
 }
 ```
 
