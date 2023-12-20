@@ -1,0 +1,135 @@
+##Criando um Serviço para Integração
+Criei um serviço na aplicação que seria responsável por integrar com o sistema externo.
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class ExternalSystemService {
+
+    private final String EXTERNAL_SYSTEM_URL = "https://user-info.herokuapp.com/users/";
+
+    private final RestTemplate restTemplate;
+
+    public ExternalSystemService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public String checkVoterStatus(String cpf) {
+        String url = EXTERNAL_SYSTEM_URL + cpf;
+        
+        try {
+            return restTemplate.getForObject(url, String.class);
+        } catch (Exception e) {
+            return "CPF inválido";
+        }
+    }
+}
+
+## Configurando RestTemplate
+No arquivo de configuração da aplicação, configurei o RestTemplate.
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+##Chamando o Serviço na Lógica de Negócios
+Integrado o serviço na lógica de negócios no serviço VotingSessionService:
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class VotingSessionService {
+
+
+    private final ExternalSystemService externalSystemService;
+
+    @Autowired
+    public VotingSessionService(ExternalSystemService externalSystemService) {
+        this.externalSystemService = externalSystemService;
+    }
+
+    public ResponseEntity<String> receberVoto(Long votingSessionId, VoteDTO voteDTO) {
+        // Verifica a elegibilidade do associado
+        String status = externalSystemService.checkVoterStatus(voteDTO.getCpf());
+
+        if ("ABLE_TO_VOTE".equals(status)) {
+            // Lógica para receber o voto
+            VotingSession votingSession = votingSessionRepository.findById(votingSessionId)
+                    .orElseThrow(() -> new NotFoundException("Voting session not found"));
+
+            if (isVotingSessionOpen(votingSession)) {
+                // Registra o voto
+                Vote vote = new Vote();
+                vote.setVotingSession(votingSession);
+                vote.setAssociateId(voteDTO.getAssociateId());
+                vote.setCpf(voteDTO.getCpf());
+                vote.setVote(voteDTO.getVote());
+
+                voteRepository.save(vote);
+
+                return new ResponseEntity<>("Voto registrado com sucesso.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Sessão de votação encerrada.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("Associado não está autorizado a votar.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+}
+
+
+@RestController
+@RequestMapping("/votacao")
+public class VotingController {
+
+    private final VotingSessionService votingSessionService;
+
+    @Autowired
+    public VotingController(VotingSessionService votingSessionService) {
+        this.votingSessionService = votingSessionService;
+    }
+
+    @PostMapping("/receberVoto/{id}")
+    public ResponseEntity<String> receberVoto(@PathVariable Long id, @RequestBody VoteDTO votoDTO) {
+
+        String status = votingSessionService.checkAssociateVotingEligibility(votoDTO.getCpf());
+
+        if ("ABLE_TO_VOTE".equals(status)) {
+          
+            return new ResponseEntity<>("Voto registrado com sucesso.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Associado não está autorizado a votar.", HttpStatus.UNAUTHORIZED);
+        }
+    }
+}
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class VoteDTO {
+	@JsonProperty("associateId")
+    private Long associateId;
+
+    @JsonProperty("voto")
+    private String voto;
+
+    @JsonProperty("cpf")
+    private String cpf;
+
+}
