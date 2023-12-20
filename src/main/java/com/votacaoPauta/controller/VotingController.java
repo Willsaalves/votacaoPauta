@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.votacaoPauta.DTO.SessaoRequestDTO;
+import com.votacaoPauta.DTO.SessionRequestDTO;
 import com.votacaoPauta.DTO.VoteDTO;
 import com.votacaoPauta.domain.associate.Associate;
 import com.votacaoPauta.domain.schedule.Schedule;
@@ -53,7 +53,7 @@ public class VotingController {
 
 	@PostMapping("/abrirSessao/{scheduleId}")
 	public ResponseEntity<?> abrirSessao(@PathVariable Long scheduleId,
-	                                      @RequestBody SessaoRequestDTO sessaoRequestDTO) {
+	                                      @RequestBody SessionRequestDTO sessaoRequestDTO) {
 
 	    try {
 	        LocalDateTime dataAbertura = LocalDateTime.now();
