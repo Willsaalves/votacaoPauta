@@ -129,7 +129,7 @@ GET http://localhost:8080/votacao/resultadoVotacao/{scheduleId}
 
   ## Não Implementação Completa
 
-  Devido à inatividade da API externa, a funcionalidade de integração não foi implementada. 
+  Devido à inatividade da API externa, a funcionalidade de integração não foi implementada. Posso deixar como seria o código em um arquivo separado para analise do mesmo.
 
 
 ## Tarefa Bonus 4 
