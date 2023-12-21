@@ -33,7 +33,7 @@ docker build -t desafio-pauta .
 ``` 
 ### Subir stack
 ```
-docker-compose -f docker-compose.yml up -d
+docker-compose up
 ``` 
 
 ## Ambiente Windows
@@ -129,7 +129,7 @@ GET http://localhost:8080/votacao/resultadoVotacao/{scheduleId}
 
   ## Não Implementação Completa
 
-  Devido à inatividade da API externa, a funcionalidade de integração não foi implementada. Posso deixar como seria o código em um arquivo separado para analise do mesmo.
+  Devido à inatividade da API externa, a funcionalidade de integração não foi implementada.
 
 
 ## Tarefa Bonus 4 
