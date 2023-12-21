@@ -16,16 +16,45 @@
    OpenJDK 64-Bit Server VM (build 17+35-2724, mixed mode)
 
 
+## Ambiente Linux
 
-## Banco De Dados
+### Executar os testes automatizados:
 
-  Nesta aplicação, é importante destacar a presença de dois ambientes de banco de dados distintos: o ambiente de desenvolvimento (dev), no qual foi implementado o uso do H2 em memória; e o ambiente de produção (prod), no qual os dados são persistentes, atendendo aos requisitos específicos do desafio.
+````
+mvn test -P dev
+````
+### Empacotar dependencias
+```
+mvn package -DskipTests
+``` 
+### Construir imagem 
+```
+docker build -t desafio-pauta .
+``` 
+### Subir stack
+```
+docker-compose -f docker-compose.yml up -d
+``` 
 
-## Testes
-Para executar os testes do projeto
+## Ambiente Windows
 
-mvn test
+### Executar os testes automatizados:
 
+````
+mvn test -P dev
+````
+### Empacotar dependencias
+```
+mvn package -DskipTests
+``` 
+### Construir imagem
+```
+docker build -t desafio-pauta .
+``` 
+### Subir stack
+```
+docker-compose up
+``` 
 
 ## Swagger
 
@@ -96,11 +125,7 @@ GET http://localhost:8080/votacao/resultadoVotacao/{scheduleId}
 
   ## Integração com Sistema Externo
 
-  A aplicação possui uma funcionalidade de integração com um sistema externo para verificar a elegibilidade de um associado para votar, com base no CPF. No entanto, no momento da implementação, a API externa ([link da API externa](https://user-info.herokuapp.com/users/{cpf})) encontra-se fora do ar.
-
-  ## Como Funcionaria
-
-  O serviço `ExternalSystemService` foi implementado para realizar chamadas para o sistema externo e verificar o status do associado com base no CPF. A lógica para verificar a elegibilidade foi adicionada na controladora `VotingController`, que antes de permitir o registro do voto, verifica se o associado está autorizado a votar.
+  A aplicação possui uma funcionalidade de integração com um sistema externo para verificar a elegibilidade de um associado para votar, com base no CPF. No entanto, no momento da implementação, a API externa ([herokuapp](https://user-info.herokuapp.com/users/{cpf})) encontra-se fora do ar.
 
   ## Não Implementação Completa
 
