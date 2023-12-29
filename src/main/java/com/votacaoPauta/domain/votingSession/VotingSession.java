@@ -27,7 +27,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@Data
 public class VotingSession {
 
 	@Id
